@@ -4,8 +4,8 @@ import { initializeApp } from "firebase/app";
 import {
   getAuth,
   GoogleAuthProvider,
-  signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   onAuthStateChanged,
   signInWithPopup,
 } from "firebase/auth";
@@ -45,12 +45,9 @@ export const signInWithGooglePopup = () =>
 
 // Sign In Form
 export const signInAuthUserWithEmailAndPassword = async (email, password) => {
-  return await signInWithEmailAndPassword(auth, email, password);
-};
+  if (!email || !password) return;
 
-// Sign Up Form
-export const createAuthUserWithEmailAndPassword = async (email, password) => {
-  return await createUserWithEmailAndPassword(auth, email, password);
+  return await signInWithEmailAndPassword(auth, email, password);
 };
 
 // =============== Database Functions ===============
@@ -58,7 +55,12 @@ export const db = getFirestore(); // what we pass around
 
 // we get back userAuth from authentication service
 // THIS IS HOW WE CREATE THE USER ON SIGN UP
-export const createUserDocumentFromAuth = async (userAuth) => {
+export const createUserDocumentFromAuth = async (
+  userAuth,
+  additionalInformation = {}
+) => {
+  if (!userAuth) return;
+
   // does doc reference exist?
   // userDocRef is an instance of a document model
 
@@ -86,6 +88,7 @@ export const createUserDocumentFromAuth = async (userAuth) => {
         displayName,
         email,
         createdAt,
+        ...additionalInformation,
       });
     } catch (error) {
       console.log("error creating user", error.message);
@@ -95,4 +98,11 @@ export const createUserDocumentFromAuth = async (userAuth) => {
   // if does exist, just return reference
 
   return userDocRef;
+};
+
+// Sign Up Form
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+  if (!email || !password) return;
+
+  return await createUserWithEmailAndPassword(auth, email, password);
 };
