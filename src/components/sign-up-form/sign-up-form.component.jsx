@@ -15,6 +15,7 @@ const initialFormFields = {
 const SignUpForm = () => {
   const [formFields, setFormFields] = useState(initialFormFields);
   const { displayName, email, password, confirmPassword } = formFields;
+
   const resetForm = () => setFormFields(initialFormFields);
 
   // tracks change within inputs

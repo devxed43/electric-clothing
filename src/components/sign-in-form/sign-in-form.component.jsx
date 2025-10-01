@@ -1,4 +1,4 @@
-import { useState, Fragment } from "react";
+import { useState, Fragment /*useContext*/ } from "react";
 import FormInput from "../form-input/form-input.component";
 import {
   createUserDocumentFromAuth,
@@ -6,7 +6,7 @@ import {
   signInWithGooglePopup,
 } from "../../utils/firebase.utils";
 
-// import "./sign-in-form.styles.scss";
+// import { UserContext } from "../../contexts/user.context";
 
 const initialFormFields = {
   email: "",
@@ -16,6 +16,9 @@ const initialFormFields = {
 const SignInForm = () => {
   const [formFields, setFormFields] = useState(initialFormFields);
   const { email, password } = formFields;
+
+  // const { setCurrentUser } = useContext(UserContext);
+
   const resetFormFields = () => setFormFields(initialFormFields);
 
   const changeHandler = (e) => {
@@ -24,8 +27,10 @@ const SignInForm = () => {
   };
 
   const signInWithGoogle = async () => {
-    const { user } = await signInWithGooglePopup();
-    await createUserDocumentFromAuth(user);
+    // const { user } = await signInWithGooglePopup();
+    // await createUserDocumentFromAuth(user);
+
+    await signInWithGooglePopup();
   };
 
   // authenticates user
@@ -33,12 +38,14 @@ const SignInForm = () => {
     e.preventDefault();
 
     try {
-      const response = await signInAuthUserWithEmailAndPassword(
+      const { user } = await signInAuthUserWithEmailAndPassword(
         email,
         password
       );
 
-      alert("yo!");
+      // sets the user that gets destructured above
+      // setCurrentUser(user);
+
       resetFormFields();
     } catch (error) {
       switch (error.code) {
