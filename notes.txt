@@ -1,0 +1,38 @@
+1. how to upload products from shop-data.js file into db
+ done with our products.context.jsx file
+ now we can pull data down from the db products.context.jsx file turns into categories.context.jsx
+
+import { createContext, useState /*useEffect*/ } from "react";
+import { addCollectionAndDocuments } from "../utils/firebase.utils.js";
+import SHOP_DATA from "../shop-data.js";
+
+export const ProductsContext = createContext({
+  products: [],
+  setProducts: () => null,
+});
+
+export const ProductsProvider = ({ children }) => {
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    addCollectionAndDocuments("categories", SHOP_DATA);
+  });
+
+  const value = { products };
+
+  return (
+    <ProductsContext.Provider value={value}>
+      {children}
+    </ProductsContext.Provider>
+  );
+};
+
+/* 
+SHOP_DATA is an array of objects
+*/
+
+
+2. study the shop component and how 
+it is Object.keys().mapping over an 
+object and picking off value of title 
+off of the object

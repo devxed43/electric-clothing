@@ -1,0 +1,14 @@
+.category-title {
+  font-size: 4rem;
+  margin: 1.5rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 20px;
+}
+
+.category-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: 20px;
+  row-gap: 50px;
+}

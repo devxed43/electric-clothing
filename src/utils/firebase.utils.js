@@ -18,6 +18,14 @@ import {
   doc, // retrieve documents inside db
   setDoc, // set document's data
   getDoc, // get document's data
+
+  // =========================
+  collection, // gets a collection Ref instead of document ref
+  writeBatch,
+
+  // =========================
+  query,
+  getDocs,
 } from "firebase/firestore";
 
 const firebaseConfig = {
@@ -44,7 +52,6 @@ googleProvider.setCustomParameters({
 export const signInWithGooglePopup = () =>
   signInWithPopup(auth, googleProvider);
 
-// Sign In Form
 export const signInAuthUserWithEmailAndPassword = async (email, password) => {
   if (!email || !password) return;
 
@@ -112,3 +119,44 @@ export const signOutUser = async () => await signOut(auth);
 
 export const onAuthStateChangedListener = (callback) =>
   onAuthStateChanged(auth, callback);
+
+// DATABASE: add to database
+// users is the key of the collection
+// categories is they key of that collection
+export const addCollectionAndDocuments = async (colKey, objsToAdd) => {
+  // access db, access collection key,
+  const colRef = collection(db, colKey);
+  const batch = writeBatch(db);
+
+  // objsToAdd -> entire SHOP_DATA
+  // obj -> each category of products
+  objsToAdd.forEach((obj) => {
+    // our document instance references the collectionRef which targets db and the collectionKey aka 'categories'
+    const docRef = doc(colRef, obj.title.toLowerCase());
+
+    // has db, collectionKey aka 'categories', document reference title
+
+    // set docRef location and set it with value of obj
+    batch.set(docRef, obj);
+  });
+
+  await batch.commit();
+  console.log("done");
+};
+
+// prevents breakage from future changes of firebase
+// centralize it here in this file
+export const getCategoriesAndDocuments = async () => {
+  const colRef = collection(db, "categories");
+  const q = query(colRef); // returns obj
+
+  const querySnapshot = await getDocs(q); // documents in the snapshot
+  // reducing over the array of docs - MOST CONFUSING PART
+  const categoryMap = querySnapshot.docs.reduce((acc, docSnapshot) => {
+    const { title, items } = docSnapshot.data();
+    acc[title.toLowerCase()] = items;
+    return acc;
+  }, {});
+
+  return categoryMap;
+};
